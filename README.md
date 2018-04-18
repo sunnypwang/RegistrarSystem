@@ -12,12 +12,21 @@ cd <path to project folder>/RegistrarSystem
 ```
 npm install
 ```
-6. To start the server, run
+6. Start your mySQL database, you need to start it first in order for server to be able to run.
+7. Import UniversityDump.sql as registrar database.
+8. in `db.js`, please enter the appropriate field for database credential information.
+ ```
+ host: 'localhost',    //set your mySQL hostname
+ user: '',         //set your mySQL username
+ password: '',     //set your mySQL password
+ database: 'registrar'   //set your database name in your local computer
+ ```
+9. To start the server, run
 ```
 node index.js
 ```
-7. Using your browser, go to http://localhost:3000/. You should see the login page.
-8. To stop the server, simply press ctrl+C
+10. Using your browser, go to http://localhost:3000/. You should see the login page.
+11. To stop the server, simply press ctrl+C
 
 note: If the server couldn't be started due to missing packages, try to install them manually.
 ```
