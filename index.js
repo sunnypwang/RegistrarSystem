@@ -17,6 +17,8 @@ app.get('/', function(req, res){
 });
 
 app.post('/main', function(req, res){
+
+    //these should be received from "HTML form" object
     var type = req.body.usertype;
     var result;
     if(type == "Student"){
@@ -99,8 +101,10 @@ app.get("/viewregister", function(req, res) {
 });
 
 app.get("/register", function(req, res) {
-    var course_id = req.query.course_id;
-    var sec_no = req.query.sec_no;
+
+    //these should be received from "HTML form" object
+    var course_id = req.body.course_id;
+    var sec_no = req.body.sec_no;
     //get registered courses of a student
     db.query('insert into register values (0,"X",?,?,?,2018,1,"CP")', [userid,SecNo,CourseID], (err,rows) => {
         if(err) throw err;
