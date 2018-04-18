@@ -13,8 +13,8 @@ cd <path to project folder>/RegistrarSystem
 npm install
 ```
 6. Start your mySQL database, you need to start it first in order for server to be able to run.
-7. Import UniversityDump.sql as registrar database.
-8. in `db.js`, please enter the appropriate field for database credential information.
+7. Import UniversityDump.sql as database name `registrar`.
+8. in `db.js`, please enter mySQL credential information you used.
  ```
  host: 'localhost',    //set your mySQL hostname
  user: '',         //set your mySQL username
@@ -32,4 +32,4 @@ note: If the server couldn't be started due to missing packages, try to install 
 ```
 npm install <package-name>
 ```
-The required package are `express` and `mysql`
+The required packages are `express` and `mysql`
