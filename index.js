@@ -64,7 +64,7 @@ app.post('/main', function(req, res){
 
 //example query
 app.get("/courseinfo", function(req, res) {
-    var course_id = req.query.id;
+    var course_id = req.query.course_id;
     db.query('SELECT * FROM course c WHERE c.CourseID = ?', [course_id], (err,rows) => {
         if(err) throw err;
         res.json(rows);
@@ -87,14 +87,32 @@ app.get("/studentinfo", function(req, res) {
 });
 
 app.get("/viewregister", function(req, res) {
-    db.query('SELECT * FROM student s,  WHERE s.StudentID = ?', [userid], (err,rows) => {
+
+    //get registered courses of a student
+    db.query('select r.CourseID, r.SecNo \
+    from register r \
+    where r.StudentID = ?', [userid], (err,rows) => {
         if(err) throw err;
         res.json(rows);
     });
+
+});
+
+app.get("/register", function(req, res) {
+    var course_id = req.query.course_id;
+    var sec_no = req.query.sec_no;
+    //get registered courses of a student
+    db.query('insert into register values (0,"X",?,?,?,2018,1,"CP")', [userid,SecNo,CourseID], (err,rows) => {
+        if(err) throw err;
+        res.json(rows);
+    });
+
 });
 
 app.get("/viewgrade", function(req, res) {
-    db.query('SELECT * FROM student s,  WHERE s.StudentID = ?', [userid], (err,rows) => {
+    db.query('select r.CourseID, r.grade \
+    from register r \
+    where r.StudentID = ?', [userid], (err,rows) => {
         if(err) throw err;
         res.json(rows);
     });
