@@ -1,6 +1,9 @@
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
+var https = require('https');
+var bodyParser = require('body-parser');
+var session = require('express-session');
 var db = require('./db');
 var login = require('./login');
 app.use(express.json());       // to support JSON-encoded bodies

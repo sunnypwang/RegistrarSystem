@@ -1,8 +1,8 @@
 var mysql = require('mysql');
 var con = mysql.createConnection({
     host: 'localhost',    //set your mySQL hostname
-    user: '',         //set your mySQL username
-    password: '',     //set your mySQL password
+    user: 'root',         //set your mySQL username
+    password: 'root1234',     //set your mySQL password
     database: 'registrar'   //set your database name in your local computer
 });
 

@@ -82,6 +82,7 @@ app.get("/facultyinfo", function(req, res) {
 });
 
 app.get("/studentinfo", function(req, res) {
+    var userid = req.query.userid;
     db.query('SELECT * FROM student s WHERE s.StudentID = ?', [userid], (err,rows) => {
         if(err) throw err;
         res.json(rows);
