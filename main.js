@@ -80,6 +80,7 @@ app.get('/', function(req, res){
     res.sendFile('login.html', { root: __dirname });
 });
 
+
 app.post('/main', function(req, res){
     console.log(req.body.usertype,req.body.id,req.body.password);
     //these should be received from "HTML form" object
