@@ -12,7 +12,8 @@ app.set('trust proxy', 1)
 
 var loggedin = false;
 var userid;
-
+var currentSemYear = 2018;
+var currentSemNo = 1;
 
 
 
@@ -199,62 +200,109 @@ app.post('/main', function(req, res){
 
 //example query
 app.get("/courseinfo", function(req, res) {
-    var course_id = req.query.course_id;
-    console.log(req.session);
+    console.log("course info");
     console.log(req.session.user);
-    db.query('SELECT * FROM course c WHERE c.CourseID = ?', [course_id], (err,rows) => {
+    db.query('SELECT * FROM course c WHERE c.CourseID LIKE ? ', [req.query.course_id + '%'], (err,rows) => {
         if(err) throw err;
         res.json(rows);
+        console.log(rows);
     });
 });
 
 app.get("/facultyinfo", function(req, res) {
-    var fcode = req.query.code;
-    db.query('SELECT * FROM faculty f WHERE f.Fcode = ?', [fcode], (err,rows) => {
+    console.log("faculty info");
+    db.query('SELECT * FROM faculty f WHERE f.Fcode LIKE ? ', [req.query.fcode + '%'], (err,rows) => {
         if(err) throw err;
         res.json(rows);
+        console.log(rows);
     });
 });
 
 app.get("/studentinfo", function(req, res) {
-    var userid = req.query.userid;
-    db.query('SELECT * FROM student s WHERE s.StudentID = ?', [userid], (err,rows) => {
+    console.log("student info");
+    console.log(req.session.user);
+    db.query(   'SELECT \
+                    s.StudentID, \
+                    s.FirstName, \
+                    s.LastName, \
+                    s.Title, \
+                    s.Bdate, \
+                    s.Sex, \
+                    s.email, \
+                    s.Number, \
+                    s.Street, \
+                    s.SubDistrict, \
+                    s.Province, \
+                    s.PostalCode, \
+                    d.Dname, \
+                    f.Fname \
+                FROM student s, faculty f, department d \
+                WHERE s.StudentID = ? AND s.Dcode = d.Dcode AND d.Fcode = f.Fcode', [req.session.user.StudentID], (err,rows) => {
         if(err) throw err;
         res.json(rows);
+        console.log(rows);
     });
 });
 
 app.get("/viewregister", function(req, res) {
-
+    console.log("view register");
     //get registered courses of a student
-    db.query('select r.CourseID, r.SecNo \
-    from register r \
-    where r.StudentID = ?', [userid], (err,rows) => {
+    db.query(   'SELECT r.ProgramCode, r.Year, r.SemesterNo, r.CourseID, r.SecNo, r.registerResult \
+                FROM register r \
+                WHERE r.StudentID = ?', [req.session.user.StudentID], (err,rows) => {
         if(err) throw err;
         res.json(rows);
+        console.log(rows);
     });
 
 });
 
 app.get("/register", function(req, res) {
-
-    //these should be received from "HTML form" object
-    var course_id = req.body.course_id;
-    var sec_no = req.body.sec_no;
-    //get registered courses of a student
-    db.query('insert into register values (0,"X",?,?,?,2018,1,"CP")', [userid,SecNo,CourseID], (err,rows) => {
+    console.log("register");
+    var data = req.query;
+    var pcode;
+    // db.query('SELECT s.', [], (err,rows) => {
+    //     if(err) throw err;
+    //     pcode = rows[0].ProgramCode;
+    // });
+    db.query('insert into register values (0,"X",?,?,?,?,?,"CP")', [req.session.user.StudentID,SecNo,CourseID,currentSemYear,currentSemNo], (err,rows) => {
         if(err) throw err;
         res.json(rows);
     });
 
 });
 
-app.get("/viewgrade", function(req, res) {
-    db.query('select r.CourseID, r.grade \
-    from register r \
-    where r.StudentID = ?', [userid], (err,rows) => {
+app.get("/drop", function(req, res) {
+    console.log("drop register");
+
+    db.query('DELETE FROM register WHERE StudentID = ? and CourseID = ? and Year = ? and SemesterNo = ?', [req.session.user.StudentID,CourseID,currentSemYear,currentSemNo], (err,rows) => {
+        if(err){
+            res.status(400).json({
+                message : 'Cannot remove this course'
+            });
+        }else res.status(200).json({});
+    });
+
+});
+
+app.get("/transcript", function(req, res) {
+    console.log("view grade");
+    db.query(   'SELECT r.ProgramCode, r.Year, r.SemesterNo, r.CourseID, r.grade \
+                FROM register r \
+                WHERE r.StudentID = ?', [req.session.user.StudentID], (err,rows) => {
         if(err) throw err;
         res.json(rows);
+        console.log(rows);
     });
 });
 
+app.get("/certificate", function(req, res) {
+    console.log("certificates requested");
+    db.query(   'SELECT * \
+                FROM certificate c \
+                WHERE c.StudentID = ?', [req.session.user.StudentID], (err,rows) => {
+        if(err) throw err;
+        res.json(rows);
+        console.log(rows);
+    });
+});
