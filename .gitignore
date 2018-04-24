@@ -1,2 +1,8 @@
 
 db.js
+node_modules/crc/package.json
+node_modules/express-session/package.json
+node_modules/on-headers/package.json
+node_modules/random-bytes/package.json
+node_modules/uid-safe/package.json
+node_modules/crc/package.json

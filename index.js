@@ -1,20 +1,25 @@
 var express = require('express');
 var app = express();
-var http = require('http').Server(app);
+var bodyParser = require('body-parser');
 var db = require('./db');
 var login = require('./login');
+const port = 3001;
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
 
-http.listen(3000, function(){
-    console.log('started on port 3000');
+app.listen(port, function(){
+    console.log('started on port '+port);
 });
 
 var loggedin = false;
 var userid;
-app.get('/', function(req, res){
-    res.sendFile('login.html', { root: __dirname });
+// app.get('/', function(req, res){
+//     res.sendFile('login.html', { root: __dirname });
+// });
+app.get('/', function(req, res) {
+    res.json({ message: 'Backend express API Initialized!'});
 });
+
 
 app.post('/main', function(req, res){
 
@@ -28,16 +33,16 @@ app.post('/main', function(req, res){
             
             if(rows[0] != undefined){
                 if(rows[0].password == req.body.password){
-                    res.sendFile('index.html', { root: __dirname });
+                    // res.sendFile('index.html', { root: __dirname });
                     loggedin = true;
                     userid = req.body.id;
                 }else{
                     console.log("password incorrect");
-                    res.sendFile('wrong.html', { root: __dirname });
+                    // res.sendFile('wrong.html', { root: __dirname });
                 }
             }else{
                 console.log("username incorrect");
-                res.sendFile('wrong.html', { root: __dirname });
+                // res.sendFile('wrong.html', { root: __dirname });
             }   
             
         });
@@ -47,16 +52,16 @@ app.post('/main', function(req, res){
 
             if(rows[0] != undefined){
                 if(rows[0].password == req.body.password){
-                    res.sendFile('index.html', { root: __dirname });
+                    // res.sendFile('index.html', { root: __dirname });
                     loggedin = true;
                     userid = req.body.id;
                 }else{
                     console.log("password incorrect");
-                    res.sendFile('wrong.html', { root: __dirname });
+                    // res.sendFile('wrong.html', { root: __dirname });
                 }
             }else{
                 console.log("username incorrect");
-                res.sendFile('wrong.html', { root: __dirname });
+                // res.sendFile('wrong.html', { root: __dirname });
             }   
         });
     }
