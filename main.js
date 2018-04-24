@@ -9,6 +9,13 @@ var login = require('./login');
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
 
+
+var loggedin = false;
+var userid;
+
+
+
+
 // Add headers
 app.use(function (req, res, next) {
 
@@ -49,20 +56,11 @@ app.use((req, res, next) => {
 });
 */
 
-// middleware function to check for logged-in users
-var sessionChecker = (req, res, next) => {
-    //if (req.session.user && req.cookies.user_sid) {
-    if (req.session.user){
-        res.redirect('/');
-    } else {
-        next();
-    }    
-};
 
 // route for user logout
 app.get('/logout', (req, res) => {
-    if (req.session.user && req.cookies.user_sid) {
-        res.clearCookie('user_sid');
+    if (req.session.user && req.cookies.user_id) {
+        res.clearCookie('user_id');
         res.redirect('/');
     } else {
         res.redirect('/login');
@@ -70,16 +68,17 @@ app.get('/logout', (req, res) => {
 });
 
 
-http.listen(3000, function(){
-    console.log('started on port 3000');
+http.listen(3001, function(){
+    console.log('started on port 3001');
 });
 
-var loggedin = false;
-var userid;
 app.get('/', function(req, res){
     res.sendFile('login.html', { root: __dirname });
 });
 
+app.post('/checksession',function(req,res){
+    console.log(req.session);
+});
 
 app.post('/main', function(req, res){
     console.log(req.body.usertype,req.body.id,req.body.password);
@@ -95,21 +94,36 @@ app.post('/main', function(req, res){
                 if(rows[0].password == req.body.password){
                     //res.sendFile('index.html', { root: __dirname });
                     //res.setHeader('Content-Type', 'application/json');
-                    //res.send(JSON.stringify ({ userid : req.body.id}));
-                    res.json({username : "walawwwwwwwwwwwww"});
+                    //res.send(JSON.stringify ({user}));
+                    //res.json({username : "walawwwwwwwwwwwww"});
+                    
+                    res.status(200).json({});
                     loggedin = true;
-                    userid = req.body.id;
+                    req.session.user = rows[0];
+                    console.log(req.session.user);
+                    return ;
+                    //user_id = req.body.id;
                 }else{
                     console.log("password incorrect");
-                    res.sendFile('wrong.html', { root: __dirname });
+                    res.status(403).json({
+                        success : false,
+                        message : 'Invalid Password'
+                    });
+                    return ;
+                    //res.sendFile('wrong.html', { root: __dirname });
                 }
             }else{
                 console.log("username incorrect");
-                res.sendFile('wrong.html', { root: __dirname });
+                res.status(403).json({
+                    success : false,
+                    message : 'Invalid Username'
+                });
+                return ;
+                //res.sendFile('wrong.html', { root: __dirname });
             }   
             
         });
-    }else{
+    }/*else{
         db.query('SELECT * FROM instructor i WHERE i.InstID = ?', [req.body.id], (err,rows) => {
             if(err) throw err;
 
@@ -127,7 +141,7 @@ app.post('/main', function(req, res){
                 res.sendFile('wrong.html', { root: __dirname });
             }   
         });
-    }
+    }*/
     
 });
 /*
@@ -182,6 +196,7 @@ app.post('/main', function(req, res){
 //example query
 app.get("/courseinfo", function(req, res) {
     var course_id = req.query.course_id;
+    console.log(req.session);
     db.query('SELECT * FROM course c WHERE c.CourseID = ?', [course_id], (err,rows) => {
         if(err) throw err;
         res.json(rows);
