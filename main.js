@@ -8,7 +8,7 @@ var db = require('./db');
 var login = require('./login');
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
-
+app.set('trust proxy', 1)
 
 var loggedin = false;
 var userid;
@@ -41,8 +41,11 @@ app.use(session({
     key: 'user_sid',
     secret: 'nani koreeeeee',
     resave: false,
-    saveUninitialized: false,
-    cookie: { maxAge: 60 * 60 * 1000 } // 1 hour
+    saveUninitialized: true,
+    cookie: { 
+        secure: false,
+        maxAge: 60 * 60 * 1000 // 1 hour
+    } 
   }));
 
 /*
@@ -100,7 +103,8 @@ app.post('/main', function(req, res){
                     res.status(200).json({});
                     loggedin = true;
                     req.session.user = rows[0];
-                    console.log(req.session.user);
+                    req.session.save();
+                    //console.log(req.session.user);
                     return ;
                     //user_id = req.body.id;
                 }else{
@@ -197,6 +201,7 @@ app.post('/main', function(req, res){
 app.get("/courseinfo", function(req, res) {
     var course_id = req.query.course_id;
     console.log(req.session);
+    console.log(req.session.user);
     db.query('SELECT * FROM course c WHERE c.CourseID = ?', [course_id], (err,rows) => {
         if(err) throw err;
         res.json(rows);
