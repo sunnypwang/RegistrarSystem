@@ -61,13 +61,7 @@ app.use((req, res, next) => {
 */
 
 
-// route for user logout
-app.get('/logout', (req, res) => {
-    req.session.destroy();
-    req.status(200).json({
-        logoutSuccess : true
-    });
-});
+
 
 
 http.listen(3001, function(){
@@ -80,6 +74,15 @@ app.get('/', function(req, res){
 
 app.post('/checksession',function(req,res){
     console.log(req.session);
+});
+
+// route for user logout
+app.post('/logout', (req, res) => {
+    console.log("I'm at /logout");
+    req.session.destroy();
+    res.status(200).json({
+        logoutSuccess : true
+    });
 });
 
 app.post('/main', function(req, res){
