@@ -32,16 +32,11 @@ CREATE TABLE `building` (
 
 --
 -- Dumping data for table `building`
-INSERT INTO `building` 
-	VALUES 
-        ('ENG10','Engineer_Building_10','1'),
-        ('ENG11','Engineer_Building_11','1'),
-        ('ENG20','Engineer_Building_20','2'),
-        ('ENG31','Engineer_Building_31','3');
 --
 
 LOCK TABLES `building` WRITE;
 /*!40000 ALTER TABLE `building` DISABLE KEYS */;
+INSERT INTO `building` VALUES ('ENG10','Engineer_Building_10','1'),('ENG11','Engineer_Building_11','1'),('ENG20','Engineer_Building_20','2'),('ENG31','Engineer_Building_31','3');
 /*!40000 ALTER TABLE `building` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -67,17 +62,11 @@ CREATE TABLE `certificate` (
 
 --
 -- Dumping data for table `certificate`
-INSERT INTO `certificate` 
-	VALUES 
-        ('Certname1','2001-01-01','Fcode1','1'),
-        ('Certname2','2002-02-02','Fcode2','2'),
-        ('Certname3','2003-03-03','Fcode3','3'),
-        ('Certname4','2004-04-04','Fcode4','4');
-            
 --
 
 LOCK TABLES `certificate` WRITE;
 /*!40000 ALTER TABLE `certificate` DISABLE KEYS */;
+INSERT INTO `certificate` VALUES ('Certname1','2001-01-01','Fcode1',1),('Certname2','2002-02-02','Fcode2',2),('Certname3','2003-03-03','Fcode3',3),('Certname4','2004-04-04','Fcode4',4);
 /*!40000 ALTER TABLE `certificate` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,24 +100,11 @@ CREATE TABLE `comment` (
 
 --
 -- Dumping data for table `comment`
-INSERT INTO `comment` 
-	VALUES 
-        ('Whatever','10','10','2001-01-01','0','1110000021','1',
-		'1010101','2560','1','ABC'),
-        ('Prog D-','2','2','2002-02-02','1','2220000021','2',
-		'2121212','2559','2','DEF'),
-        ('DB DATABASE','6','9','2003-03-03','2','3330000021','3',
-		'3232323','2560','1','ABC'),
-        ('SA Super Busy','7','6','2005-05-05','4','5550000021','5',
-		'5454545','2558','3','GHI'),
-        ('Prog D-','2','2','2002-02-02','3','4440000021','4',
-		'4343434','2559','2','DEF'),
-        ('DB DATABASE','6','9','2003-03-03','5','6660000021','6',
-		'6565656','2560','1','ABC');
 --
 
 LOCK TABLES `comment` WRITE;
 /*!40000 ALTER TABLE `comment` DISABLE KEYS */;
+INSERT INTO `comment` VALUES ('Whatever',10,10,'2001-01-01',0,1110000021,1,1010101,2560,1,'ABC'),('Prog D-',2,2,'2002-02-02',1,2147483647,2,2121212,2559,2,'DEF'),('DB DATABASE',6,9,'2003-03-03',2,2147483647,3,3232323,2560,1,'ABC'),('Prog D-',2,2,'2002-02-02',3,2147483647,4,4343434,2559,2,'DEF'),('SA Super Busy',7,6,'2005-05-05',4,2147483647,5,5454545,2558,3,'GHI'),('DB DATABASE',6,9,'2003-03-03',5,2147483647,6,6565656,2560,1,'ABC');
 /*!40000 ALTER TABLE `comment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -154,19 +130,11 @@ CREATE TABLE `course` (
 
 --
 -- Dumping data for table `course`
-INSERT INTO `course` 
-	VALUES 
-        ('1010101','WHA THE HELL','101','2560','2','ABC'),
-        ('2121212','WHA THE HELL II','202','2559','1','DEF'),
-        ('3232323','WHA THE SA','101','2558','2','ABC'),
-        ('4343434','WHA THE SA II','202','2560','2','ABC'),
-        ('5454545','WHA THE DB','101','2555','1','DEF'),
-        ('6565656','WHA THE DB II','202','2557','2','DEF')
-        ;
 --
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
+INSERT INTO `course` VALUES (1010101,'WHA THE HELL',101,2560,2,'ABC'),(2121212,'WHA THE HELL II',202,2559,1,'DEF'),(3232323,'WHA THE SA',101,2558,2,'ABC'),(4343434,'WHA THE SA II',202,2560,2,'ABC'),(5454545,'WHA THE DB',101,2555,1,'DEF'),(6565656,'WHA THE DB II',202,2557,2,'DEF');
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -192,18 +160,11 @@ CREATE TABLE `curriculum` (
 
 --
 -- Dumping data for table `curriculum`
-INSERT INTO `curriculum` 
-	VALUES 
-        ('C++','Code1','1010','2560','AB','Engineer'),
-        ('C++2','Code2','1010','2555','DF','Engineer'),
-        ('Java','Code3','2121','2557','DE','Engineer'),
-        ('SQL','Code4','1010','2550','CD','Engineer'),
-        ('MySQL','Code5','2121','2559','AB','Engineer')
-        ;
 --
 
 LOCK TABLES `curriculum` WRITE;
 /*!40000 ALTER TABLE `curriculum` DISABLE KEYS */;
+INSERT INTO `curriculum` VALUES ('B.Eng.CP','Code1',4,2560,'CP','ENG'),('B.Eng.ME','Code2',2,2555,'DF','Engineer2'),('B.Eng.CE','Code3',2,2557,'DE','Engineer3'),('B.Eng.EE','Code4',4,2550,'CD','Engineer4'),('M.Eng.CP','Code5',4,2559,'CP','ENG');
 /*!40000 ALTER TABLE `curriculum` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,18 +191,11 @@ CREATE TABLE `department` (
 
 --
 -- Dumping data for table `department`
-INSERT INTO `department` 
-	VALUES 
-        ('AB','Computer','Com Com Com','Engineer1','11000000021'),
-        ('DF','Elec','Elec Elec','Engineer2','22000000021'),
-        ('DE','Secu','Security','Engineer3','33000000021'),
-        ('CD','Metal','Metal Eng','Engineer4','44000000021')
-        ;
 --
 
 LOCK TABLES `department` WRITE;
 /*!40000 ALTER TABLE `department` DISABLE KEYS */;
-INSERT INTO `department` VALUES ('CP','Computer Engineering','Department of Computer Engineering','ENG',NULL);
+INSERT INTO `department` VALUES ('AB','Computer','Com Com Com','Engineer1',2147483647),('CD','Metal','Metal Eng','Engineer4',2147483647),('CP','Computer Engineering','Department of Computer Engineering','ENG',NULL),('DE','Secu','Security','Engineer3',2147483647),('DF','Elec','Elec Elec','Engineer2',2147483647);
 /*!40000 ALTER TABLE `department` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -269,17 +223,11 @@ CREATE TABLE `examination` (
 
 --
 -- Dumping data for table `examination`
-INSERT INTO `examination` 
-	VALUES 
-        ('TypeA','2560-01-01','1100','1400','1','2560','2','Code1'),
-        ('TypeB','2557-02-02','1400','1600','2','2557','1','Code2'),
-        ('TypeA','2558-04-05','1500','1800','3','2558','1','Code3'),
-        ('TypeA','2560-02-20','1300','1400','4','2560','2','Code4')
-        ;
 --
 
 LOCK TABLES `examination` WRITE;
 /*!40000 ALTER TABLE `examination` DISABLE KEYS */;
+INSERT INTO `examination` VALUES ('TypeA','2560-01-01','00:11:00.0000','00:14:00.0000',1,2560,2,'Code1'),('TypeA','2558-04-05','00:15:00.0000','00:18:00.0000',3,2558,1,'Code3'),('TypeA','2560-02-20','00:13:00.0000','00:14:00.0000',4,2560,2,'Code4'),('TypeB','2557-02-02','00:14:00.0000','00:16:00.0000',2,2557,1,'Code2');
 /*!40000 ALTER TABLE `examination` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -307,17 +255,11 @@ CREATE TABLE `examroom` (
 
 --
 -- Dumping data for table `examroom`
-INSERT INTO `examroom` 
-	VALUES 
-        ('TypeA','1','2560','2','Code1','101','ENG1'),
-       ('TypeB','2','2557','1','Code2','202','ENG2'),
-       ('TypeB','2','2557','1','Code2','303','ENG3'),
-       ('TypeB','2','2557','1','Code2','404','ENG1')
-       ;
 --
 
 LOCK TABLES `examroom` WRITE;
 /*!40000 ALTER TABLE `examroom` DISABLE KEYS */;
+INSERT INTO `examroom` VALUES ('TypeA',1,2560,2,'Code1',101,'ENG1'),('TypeB',2,2557,1,'Code2',202,'ENG2'),('TypeB',2,2557,1,'Code2',303,'ENG3'),('TypeB',2,2557,1,'Code2',404,'ENG1');
 /*!40000 ALTER TABLE `examroom` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -338,17 +280,11 @@ CREATE TABLE `faculty` (
 
 --
 -- Dumping data for table `faculty`
-INSERT INTO `faculty` 
-	VALUES 
-        ('Engineer','Engineer1','EEEEEEE'),
-       ('Engineer','Engineer2','DDDDDDD'),
-       ('Engineer','Engineer3','CCCCCCC')
-       ;
 --
 
 LOCK TABLES `faculty` WRITE;
 /*!40000 ALTER TABLE `faculty` DISABLE KEYS */;
-INSERT INTO `faculty` VALUES ('Faculty of Engineering','ENG','Faculty of Engineering');
+INSERT INTO `faculty` VALUES ('Faculty of Engineering','ENG','Faculty of Engineering'),('Engineer','Engineer1','EEEEEEE'),('Engineer','Engineer2','DDDDDDD'),('Engineer','Engineer3','CCCCCCC');
 /*!40000 ALTER TABLE `faculty` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -383,22 +319,11 @@ CREATE TABLE `instructor` (
 
 --
 -- Dumping data for table `instructor`
-INSERT INTO `instructor` 
-	VALUES 
-        ('B','A','Doctor','M','2560-01-01','A@gmail.com','110000021',
-        '123456789','A_Street','1_Sub_Distict',' A_Province','10000', 'AB',
-        'Engineer1','1111'),
-        ('D','C','A_Doctor','F','2560-01-01','D@gmail.com','220000021',
-        '123456789','B_Street','1_Sub_Distict',' B_Province','10000', 'DF',
-        'Engineer2','1111'),
-        ('F','E','Doctor','M','2560-01-01','F@gmail.com','330000021',
-        '123456789','C_Street','1_Sub_Distict',' C_Province','10000', 'DE',
-        'Engineer3','1111')
-       ;
 --
 
 LOCK TABLES `instructor` WRITE;
 /*!40000 ALTER TABLE `instructor` DISABLE KEYS */;
+INSERT INTO `instructor` VALUES ('B','A','Doctor','M','2560-01-01','A@gmail.com',110000021,123456789,'A_Street','1_Sub_Distict',' A_Province',10000,'AB','Engineer1','1111'),('D','C','A_Doctor','F','2560-01-01','D@gmail.com',220000021,123456789,'B_Street','1_Sub_Distict',' B_Province',10000,'DF','Engineer2','1111'),('F','E','Doctor','M','2560-01-01','F@gmail.com',330000021,123456789,'C_Street','1_Sub_Distict',' C_Province',10000,'DE','Engineer3','1111');
 /*!40000 ALTER TABLE `instructor` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -427,18 +352,11 @@ CREATE TABLE `register` (
 
 --
 -- Dumping data for table `register`
-INSERT INTO `register` 
-	VALUES 
-        ('1','A','0','1','1100000002','2560','2','Code'),
-        ('2','B','1','1','1100000002','2560','2','Code'),
-        ('1','C','0','1','2200000002','2557','1','Code'),
-        ('3','A','2','1','1100000002','2560','2','Code')
-        
-       ;
 --
 
 LOCK TABLES `register` WRITE;
 /*!40000 ALTER TABLE `register` DISABLE KEYS */;
+INSERT INTO `register` VALUES (1,'A',0,1,1100000002,2560,2,'Code'),(1,'C',0,1,2147483647,2557,1,'Code'),(2,'B',1,1,1100000002,2560,2,'Code'),(3,'A',2,1,1100000002,2560,2,'Code');
 /*!40000 ALTER TABLE `register` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -461,19 +379,11 @@ CREATE TABLE `room` (
 
 --
 -- Dumping data for table `room`
-INSERT INTO `room` 
-	VALUES 
-        ('101','1','ENG10'),
-        ('111','1','ENG11'),
-        ('211','1','ENG21'),
-        ('301','1','ENG30')
-        
-        
-       ;
 --
 
 LOCK TABLES `room` WRITE;
 /*!40000 ALTER TABLE `room` DISABLE KEYS */;
+INSERT INTO `room` VALUES (101,1,'ENG10'),(111,1,'ENG11'),(211,1,'ENG21'),(301,1,'ENG30');
 /*!40000 ALTER TABLE `room` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -501,18 +411,11 @@ CREATE TABLE `secroom` (
 
 --
 -- Dumping data for table `secroom`
-INSERT INTO `secroom` 
-	VALUES 
-        ('1','1100000002','2560','2','Code1','101','ENG10'),
-        ('2','2200000002','2557','1','Code2','211','ENG21'),
-        ('3','3300000002','2558','2','Code3','301','ENG30')
-        
-        
-       ;
 --
 
 LOCK TABLES `secroom` WRITE;
 /*!40000 ALTER TABLE `secroom` DISABLE KEYS */;
+INSERT INTO `secroom` VALUES (1,1100000002,2560,2,'Code1',101,'ENG10'),(2,2147483647,2557,1,'Code2',211,'ENG21'),(3,2147483647,2558,2,'Code3',301,'ENG30');
 /*!40000 ALTER TABLE `secroom` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -544,18 +447,11 @@ CREATE TABLE `section` (
 
 --
 -- Dumping data for table `section`
-INSERT INTO `section` 
-	VALUES 
-        ('50','2','1300','1600','30','1100000002','2560','2','Code1','123456789'),
-        ('30','1','0800','1100','20','2200000002','2555','2','Code2','987654321'),
-        ('45','2','1300','1800','10','3300000002','2557','2','Code3','123456789')
-        
-        
-       ;
 --
 
 LOCK TABLES `section` WRITE;
 /*!40000 ALTER TABLE `section` DISABLE KEYS */;
+INSERT INTO `section` VALUES (30,1,'00:08:00.0000','00:11:00.0000',20,2147483647,2555,2,'Code2',987654321),(50,2,'00:13:00.0000','00:16:00.0000',30,1100000002,2560,2,'Code1',123456789),(45,2,'00:13:00.0000','00:18:00.0000',10,2147483647,2557,2,'Code3',123456789);
 /*!40000 ALTER TABLE `section` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -578,19 +474,11 @@ CREATE TABLE `semester` (
 
 --
 -- Dumping data for table `semester`
-INSERT INTO `semester` 
-	VALUES 
-        ('2500','2','Code1'),
-        ('2550','1','Code2'),
-        ('2555','3','Code3'),
-        ('2560','2','Code4')
-        
-        
-       ;
 --
 
 LOCK TABLES `semester` WRITE;
 /*!40000 ALTER TABLE `semester` DISABLE KEYS */;
+INSERT INTO `semester` VALUES (2500,2,'Code1'),(2550,1,'Code2'),(2555,3,'Code3'),(2560,2,'Code4');
 /*!40000 ALTER TABLE `semester` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -617,32 +505,22 @@ CREATE TABLE `student` (
   `Dcode` varchar(2) NOT NULL,
   `Fcode` varchar(10) NOT NULL,
   `password` varchar(100) NOT NULL,
+  `ProgramCode` varchar(6) DEFAULT NULL,
   PRIMARY KEY (`StudentID`),
   KEY `Dcode` (`Dcode`,`Fcode`),
-  CONSTRAINT `student_ibfk_1` FOREIGN KEY (`Dcode`, `Fcode`) REFERENCES `department` (`Dcode`, `Fcode`)
+  KEY `student_ibfk_2_idx` (`ProgramCode`),
+  CONSTRAINT `student_ibfk_1` FOREIGN KEY (`Dcode`, `Fcode`) REFERENCES `department` (`Dcode`, `Fcode`),
+  CONSTRAINT `student_ibfk_2` FOREIGN KEY (`ProgramCode`) REFERENCES `curriculum` (`ProgramCode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `student`
-INSERT INTO `student` 
-	VALUES 
-        ('1','1','2','Mr.','2560-02-20','M','1@gmail.com','1','1Street',
-        '1Sub', '1Pro', '10000','AB','Engineer1','1'),
-        ('2','3','4','Ms.','2560-02-22','F','1@gmail.com','2','2Street',
-        '2Sub', '2Pro', '10001','AB','Engineer1','2'),
-        ('3','5','6','Mr.','2560-02-24','M','1@gmail.com','3','3Street',
-        '3Sub', '3Pro', '10002','CD','Engineer4','3'),
-        ('5','7','8','Ms.','2560-02-26','F','1@gmail.com','4','4Street',
-        '4Sub', '4Pro', '10003','CD','Engineer4','4')
-        
-        
-       ;
 --
 
 LOCK TABLES `student` WRITE;
 /*!40000 ALTER TABLE `student` DISABLE KEYS */;
-INSERT INTO `student` VALUES (0,'John','Doe','Mr','1997-01-01','M','johndoe@aaa.com',1234567890,'4/20 Phayathai','Phayathai','Bangkok',10200,'CP','ENG','1234');
+INSERT INTO `student` VALUES (0,'John','Doe','Mr','1997-01-01','M','johndoe@aaa.com',1234567890,'4/20 Phayathai','Phayathai','Bangkok',10200,'CP','ENG','1234','Code1'),(1,'1','2','Mr.','2560-02-20','M','1@gmail.com',1,'1Street','1Sub','1Pro',10000,'CP','ENG','1','Code1'),(2,'3','4','Ms.','2560-02-22','F','1@gmail.com',2,'2Street','2Sub','2Pro',10001,'DF','Engineer2','2','Code2'),(3,'5','6','Mr.','2560-02-24','M','1@gmail.com',3,'3Street','3Sub','3Pro',10002,'CD','Engineer4','3','Code4'),(5,'7','8','Ms.','2560-02-26','F','1@gmail.com',4,'4Street','4Sub','4Pro',10003,'CD','Engineer4','4','Code4');
 /*!40000 ALTER TABLE `student` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -655,25 +533,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-04-17 20:40:10
-
-
-/*INSERT INTO `comment` 
-	VALUES 
-        ('Whatever','10','10','2001-01-01','0','1110000021','1',
-		'1010101','2560','1','ABC'),
-        ('Prog D-','2','2','2002-02-02','1','2220000021','2',
-		'2121212','2559','2','DEF'),
-        ('DB DATABASE','6','9','2003-03-03','2','3330000021','1',
-		'1010101','2560','1','ABC'),
-        ('SA Super Busy','7','6','2005-05-05','4','5550000021','6',
-		'4343434','2558','3','GHI'),
-        ('Prog D-','2','2','2002-02-02','3','4440000021','2',
-		'2121212','2559','2','DEF'),
-        ('DB DATABASE','6','9','2003-03-03','5','6660000021','1',
-		'1010101','2560','1','ABC');
-        */
-
-
-
-            
+-- Dump completed on 2018-04-25 10:06:53
