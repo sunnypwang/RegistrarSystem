@@ -104,7 +104,7 @@ app.post('/main', function(req, res){
                     res.status(200).json({});
                     loggedin = true;
                     req.session.user = rows[0];
-                    req.session.save();
+                    //req.session.save();
                     //console.log(req.session.user);
                     return ;
                     //user_id = req.body.id;
@@ -202,6 +202,7 @@ app.post('/main', function(req, res){
 app.get("/courseinfo", function(req, res) {
     console.log("course info");
     console.log(req.session.user);
+    console.log(req.session.user.StudentID);
     db.query('SELECT * FROM course c WHERE c.CourseID LIKE ? ', [req.query.course_id + '%'], (err,rows) => {
         if(err) throw err;
         res.json(rows);
