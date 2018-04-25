@@ -40,7 +40,7 @@ app.use(function (req, res, next) {
 app.use(session({
     key: 'user_sid',
     secret: 'nani koreeeeee',
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     cookie: { 
         secure: false,
@@ -103,7 +103,7 @@ app.post('/main', function(req, res){
                     res.status(200).json({});
                     loggedin = true;
                     req.session.user = rows[0];
-                    req.session.save();
+                    //req.session.save();
                     //console.log(req.session.user);
                     return ;
                     //user_id = req.body.id;
