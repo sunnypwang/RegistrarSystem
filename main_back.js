@@ -78,7 +78,7 @@ app.post('/checksession',function(req,res){
 
 // route for user logout
 app.post('/logout', (req, res) => {
-    console.log("I'm at /logout");
+    //console.log("I'm at /logout");
     req.session.destroy();
     res.status(200).json({
         logoutSuccess : true
