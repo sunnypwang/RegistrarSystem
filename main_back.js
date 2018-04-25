@@ -63,12 +63,10 @@ app.use((req, res, next) => {
 
 // route for user logout
 app.get('/logout', (req, res) => {
-    if (req.session.user && req.cookies.user_id) {
-        res.clearCookie('user_id');
-        res.redirect('/');
-    } else {
-        res.redirect('/login');
-    }
+    req.session.destroy();
+    req.status(200).json({
+        logoutSuccess : true
+    });
 });
 
 
