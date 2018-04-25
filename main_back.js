@@ -41,28 +41,13 @@ app.use(function (req, res, next) {
 app.use(session({
     key: 'user_sid',
     secret: 'nani koreeeeee',
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     cookie: { 
         secure: false,
         maxAge: 60 * 60 * 1000 // 1 hour
     } 
   }));
-
-/*
-// This middleware will check if user's cookie is still saved in browser and user is not set, then automatically log the user out.
-// This usually happens when you stop your express server after login, your cookie still remains saved in the browser.
-app.use((req, res, next) => {
-    if (req.cookies.user_sid && !req.session.user) {
-        res.clearCookie('user_sid');        
-    }
-    next();
-});
-*/
-
-
-
-
 
 http.listen(3001, function(){
     console.log('started on port 3001');
@@ -85,7 +70,7 @@ app.post('/logout', (req, res) => {
     });
 });
 
-app.post('/main', function(req, res){
+app.post('/login', function(req, res){
     console.log(req.body.usertype,req.body.id,req.body.password);
     //these should be received from "HTML form" object
     var type = req.body.usertype;
@@ -105,7 +90,7 @@ app.post('/main', function(req, res){
                     res.status(200).json({});
                     loggedin = true;
                     req.session.user = rows[0];
-                    //req.session.save();
+                    req.session.save();
                     //console.log(req.session.user);
                     return ;
                     //user_id = req.body.id;
@@ -203,7 +188,7 @@ app.post('/main', function(req, res){
 app.get("/courseinfo", function(req, res) {
     console.log("course info");
     console.log(req.session.user);
-    console.log(req.session.user.StudentID);
+    //console.log(req.session.user.StudentID);
     db.query('SELECT * FROM course c WHERE c.CourseID LIKE ? ', [req.query.course_id + '%'], (err,rows) => {
         if(err) throw err;
         res.json(rows);
@@ -259,15 +244,16 @@ app.get("/viewregister", function(req, res) {
 
 });
 
-app.get("/register", function(req, res) {
+app.post("/register", function(req, res) {
     console.log("register");
+    console.log(req.session.user);
     var data = req.query;
     var pcode;
     // db.query('SELECT s.', [], (err,rows) => {
     //     if(err) throw err;
     //     pcode = rows[0].ProgramCode;
     // });
-    db.query('insert into register values (0,"X",?,?,?,?,?,"CP")', [req.session.user.StudentID,SecNo,CourseID,currentSemYear,currentSemNo], (err,rows) => {
+    db.query('insert into register values (0,"X",?,?,?,?,?,"CP")', [req.session.user.StudentID,req.body.SecNo,req.body.CourseID,currentSemYear,currentSemNo], (err,rows) => {
         if(err) throw err;
         res.json(rows);
     });
