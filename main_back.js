@@ -248,7 +248,7 @@ app.post("/register", function(req, res) {
     console.log("register");
     console.log(req.session.user);
     var data = req.query;
-    var pcode;
+
     // db.query('SELECT s.', [], (err,rows) => {
     //     if(err) throw err;
     //     pcode = rows[0].ProgramCode;
