@@ -15,7 +15,9 @@ var userid;
 var currentSemYear = 2018;
 var currentSemNo = 1;
 
-
+function isNumeric(num){
+    return !isNaN(num)
+}
 
 // Add headers
 app.use(function (req, res, next) {
@@ -77,112 +79,46 @@ app.post('/login', function(req, res){
     var result;
     if(type == "Student"){
         console.log(req.body.id);
-        db.query('SELECT * FROM student s WHERE s.StudentID = ?', [req.body.id], (err,rows) => {
-            if(err) throw err;
-            
-            if(rows[0] != undefined){
-                if(rows[0].password == req.body.password){
-                    //res.sendFile('index.html', { root: __dirname });
-                    //res.setHeader('Content-Type', 'application/json');
-                    //res.send(JSON.stringify ({user}));
-                    //res.json({username : "walawwwwwwwwwwwww"});
-                    
-                    res.status(200).json({});
-                    loggedin = true;
-                    req.session.user = rows[0];
-                    req.session.save();
-                    //console.log(req.session.user);
-                    return ;
-                    //user_id = req.body.id;
+        db.query('SELECT s.StudentID, s.password FROM student s WHERE s.StudentID = ?', [req.body.id], (err,rows) => {
+            if(err){
+                res.status(400).json({
+                    message : 'Cannot retrieve login info'
+                });
+            }else {
+                console.log(rows);
+                if((rows[0] != undefined) || (rows[0] != null)){
+                    if(rows[0].password == req.body.password){
+                        
+                        res.status(200).json({});
+                        loggedin = true;
+                        req.session.user = rows[0];
+                        req.session.save();
+                        //console.log(req.session.user);
+                        return ;
+                        //user_id = req.body.id;
+                    }else{
+                        console.log("password incorrect");
+                        res.status(403).json({
+                            success : false,
+                            message : 'Invalid Password'
+                        });
+                        return ;
+                        //res.sendFile('wrong.html', { root: __dirname });
+                    }
                 }else{
-                    console.log("password incorrect");
+                    console.log("username incorrect");
                     res.status(403).json({
                         success : false,
-                        message : 'Invalid Password'
+                        message : 'Invalid Username'
                     });
                     return ;
                     //res.sendFile('wrong.html', { root: __dirname });
-                }
-            }else{
-                console.log("username incorrect");
-                res.status(403).json({
-                    success : false,
-                    message : 'Invalid Username'
-                });
-                return ;
-                //res.sendFile('wrong.html', { root: __dirname });
-            }   
-            
-        });
-    }/*else{
-        db.query('SELECT * FROM instructor i WHERE i.InstID = ?', [req.body.id], (err,rows) => {
-            if(err) throw err;
-
-            if(rows[0] != undefined){
-                if(rows[0].password == req.body.password){
-                    res.sendFile('index.html', { root: __dirname });
-                    loggedin = true;
-                    userid = req.body.id;
-                }else{
-                    console.log("password incorrect");
-                    res.sendFile('wrong.html', { root: __dirname });
-                }
-            }else{
-                console.log("username incorrect");
-                res.sendFile('wrong.html', { root: __dirname });
-            }   
-        });
-    }*/
-    
-});
-/*
-app.post('/main', function(req, res){
-    console.log(req.body.usertype,req.body.id,req.body.password);
-    //these should be received from "HTML form" object
-    var type = req.body.usertype;
-    var result;
-    if(type == "Student"){
-        console.log(req.body.id);
-        db.query('SELECT * FROM student s WHERE s.StudentID = ?', [req.body.id], (err,rows) => {
-            if(err) throw err;
-            
-            if(rows[0] != undefined){
-                if(rows[0].password == req.body.password){
-                    res.sendFile('index.html', { root: __dirname });
-                    loggedin = true;
-                    userid = req.body.id;
-                }else{
-                    console.log("password incorrect");
-                    res.sendFile('wrong.html', { root: __dirname });
-                }
-            }else{
-                console.log("username incorrect");
-                res.sendFile('wrong.html', { root: __dirname });
-            }   
-            
-        });
-    }else{
-        db.query('SELECT * FROM instructor i WHERE i.InstID = ?', [req.body.id], (err,rows) => {
-            if(err) throw err;
-
-            if(rows[0] != undefined){
-                if(rows[0].password == req.body.password){
-                    res.sendFile('index.html', { root: __dirname });
-                    loggedin = true;
-                    userid = req.body.id;
-                }else{
-                    console.log("password incorrect");
-                    res.sendFile('wrong.html', { root: __dirname });
-                }
-            }else{
-                console.log("username incorrect");
-                res.sendFile('wrong.html', { root: __dirname });
-            }   
+                }   
+            }                
         });
     }
     
 });
-*/
 
 //example query
 app.get("/courseinfo", function(req, res) {
@@ -190,18 +126,28 @@ app.get("/courseinfo", function(req, res) {
     console.log(req.session.user);
     //console.log(req.session.user.StudentID);
     db.query('SELECT * FROM course c WHERE c.CourseID LIKE ? ', [req.query.course_id + '%'], (err,rows) => {
-        if(err) throw err;
-        res.json(rows);
-        console.log(rows);
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve course info'
+            });
+        }else {
+            res.json(rows);
+            console.log(rows);
+        }
     });
 });
 
 app.get("/facultyinfo", function(req, res) {
     console.log("faculty info");
     db.query('SELECT * FROM faculty f WHERE f.Fcode LIKE ? ', [req.query.fcode + '%'], (err,rows) => {
-        if(err) throw err;
-        res.json(rows);
-        console.log(rows);
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve faculty info'
+            });
+        }else {
+            res.json(rows);
+            console.log(rows);
+        }
     });
 });
 
@@ -225,9 +171,14 @@ app.get("/studentinfo", function(req, res) {
                     f.Fname \
                 FROM student s, faculty f, department d \
                 WHERE s.StudentID = ? AND s.Dcode = d.Dcode AND d.Fcode = f.Fcode', [req.session.user.StudentID], (err,rows) => {
-        if(err) throw err;
-        res.json(rows);
-        console.log(rows);
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve student info'
+            });
+        }else {
+            res.json(rows);
+            console.log(rows);
+        }
     });
 });
 
@@ -237,26 +188,44 @@ app.get("/viewregister", function(req, res) {
     db.query(   'SELECT r.ProgramCode, r.Year, r.SemesterNo, r.CourseID, r.SecNo, r.registerResult \
                 FROM register r \
                 WHERE r.StudentID = ?', [req.session.user.StudentID], (err,rows) => {
-        if(err) throw err;
-        res.json(rows);
-        console.log(rows);
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve registered data'
+            });
+        }else {
+            res.json(rows);
+            console.log(rows);
+        }
     });
 
 });
 
 app.post("/register", function(req, res) {
     console.log("register");
-    console.log(req.session.user);
-    var data = req.query;
+    console.log(req.body);
 
-    // db.query('SELECT s.', [], (err,rows) => {
-    //     if(err) throw err;
-    //     pcode = rows[0].ProgramCode;
-    // });
-    db.query('insert into register values (0,"X",?,?,?,?,?,"CP")', [req.session.user.StudentID,req.body.SecNo,req.body.CourseID,currentSemYear,currentSemNo], (err,rows) => {
-        if(err) throw err;
-        res.json(rows);
+    db.query('SELECT s.', [], (err,rows) => {
+        if(err){
+            res.status(404).json({
+                success : false,
+                message : 'Student ProgramCode not found'
+            });
+        } else {
+            pcode = rows[0].ProgramCode;
+            db.query('insert into register values (0,"X",?,?,?,?,?,?)', [req.session.user.StudentID,req.body.SecNo,req.body.CourseID,currentSemYear,currentSemNo,pcode], (err,rows) => {
+                if(err){
+                    res.status(400).json({
+                        success : false,
+                        message : 'Course/Section not found'
+                    });
+                } else {
+                    res.status(200).json({});
+                }
+                
+            });
+        }
     });
+    
 
 });
 
@@ -268,7 +237,9 @@ app.get("/drop", function(req, res) {
             res.status(400).json({
                 message : 'Cannot remove this course'
             });
-        }else res.status(200).json({});
+        }else {
+            res.status(200).json({});
+        }
     });
 
 });
@@ -278,9 +249,16 @@ app.get("/transcript", function(req, res) {
     db.query(   'SELECT r.ProgramCode, r.Year, r.SemesterNo, r.CourseID, r.grade \
                 FROM register r \
                 WHERE r.StudentID = ?', [req.session.user.StudentID], (err,rows) => {
-        if(err) throw err;
-        res.json(rows);
-        console.log(rows);
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve student grade'
+            });
+        }else {
+            res.json(rows);
+            console.log(rows);
+        }
+        
+        
     });
 });
 
@@ -289,8 +267,13 @@ app.get("/certificate", function(req, res) {
     db.query(   'SELECT * \
                 FROM certificate c \
                 WHERE c.StudentID = ?', [req.session.user.StudentID], (err,rows) => {
-        if(err) throw err;
-        res.json(rows);
-        console.log(rows);
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve certificate data'
+            });
+        }else {
+            res.json(rows);
+            console.log(rows);
+        }
     });
 });
