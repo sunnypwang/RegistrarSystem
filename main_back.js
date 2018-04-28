@@ -132,7 +132,7 @@ app.get("/courseinfo", function(req, res) {
         where s.courseID LIKE ? and s.Year LIKE ? and s.SemesterNo LIKE ? \
         group by s.SecNo \
     ) t1, course c, secroom sr, room ro \
-    WHERE s.CourseID LIKE ? and  \
+    WHERE s.CourseID LIKE t1.CourseID and  \
         s.SecNo = t1.secNo and  \
         c.CourseID = s.CourseID and \
         sr.ProgramCode = s.ProgramCode and \
@@ -141,7 +141,7 @@ app.get("/courseinfo", function(req, res) {
         sr.CourseID = s.CourseID and \
         sr.SecNo = s.SecNo and \
         sr.RoomNo = ro.RoomNo and \
-        sr.Bcode = ro.Bcode ', [req.query.course_id + '%',req.query.year + '%',req.query.semNo + '%',req.query.course_id + '%'], (err,rows) => {
+        sr.Bcode = ro.Bcode ', [req.query.course_id + '%',req.query.year + '%',req.query.semNo + '%'], (err,rows) => {
         if(err){
             res.status(400).json({
                 message : 'Cannot retrieve course info'
@@ -364,5 +364,70 @@ app.get("/classtime", function(req, res) {
             res.json(rows);
             console.log(rows);
         }
+    });
+});
+
+app.get("/commentlist", function(req, res) {
+    console.log("list all courses waiting for comment");
+
+    //get all courses that haven't been commented
+    db.query(   'select s.CourseID, c.CourseName, s.SecNo, i.Title, i.FirstName, i.LastName \
+    from instructor i, section s, course c, \
+        (select r.CourseID, r.SecNo, r.Year, r.SemesterNo, r.ProgramCode \
+        from register r left join comment com \
+        on r.StudentID = com.StudentID and r.courseID = com.CourseID and r.SecNo = com.SecNo and r.Year = com.Year and r.SemesterNo = com.SemesterNo and r.ProgramCode = com.ProgramCode \
+        where com.CourseID IS NULL   and r.StudentID = 58333333 and r.Year = 2018 and r.SemesterNo = 1) t1 \
+    where i.InstID = s.InstID and  \
+    t1.courseId = s.courseID and c.CourseID = s.CourseID and \
+    t1.secNo = s.SecNo and \
+    t1.Year = s.Year and s.Year = c.Year and \
+    t1.SemesterNo = s.SemesterNo and s.SemesterNo = c.SemesterNo and \
+    t1.ProgramCode = s.ProgramCode and s.ProgramCode = c.ProgramCode', [req.session.user.StudentID,currentSemYear,currentSemNo], (err,rows) => {
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve comments'
+            });
+        }else {
+            res.json(rows);
+            console.log(rows);
+        }
+    });
+});
+
+app.get("/commentadd", function(req, res) {
+    console.log("add comment");
+
+    //get associated field from given CourseID and SecNo from FRONT
+    db.query(   'select s.CourseID, s.SecNo, i.InstID, s.Year, s.SemesterNo, s.ProgramCode \
+    from instructor i, section s, course c, \
+        (select r.CourseID, r.SecNo, r.Year, r.SemesterNo, r.ProgramCode \
+        from register r left join comment com \
+        on r.StudentID = com.StudentID and r.courseID = com.CourseID and r.SecNo = com.SecNo and r.Year = com.Year and r.SemesterNo = com.SemesterNo and r.ProgramCode = com.ProgramCode \
+        where com.CourseID IS NULL and r.StudentID = ? and r.CourseID = ? and r.SecNo = ? and r.Year = ? and r.SemesterNo = ?) t1 \
+    where i.InstID = s.InstID and  \
+        t1.courseId = s.courseID and c.CourseID = s.CourseID and \
+        t1.secNo = s.SecNo and \
+        t1.Year = s.Year and s.Year = c.Year and \
+        t1.SemesterNo = s.SemesterNo and s.SemesterNo = c.SemesterNo and \
+        t1.ProgramCode = s.ProgramCode and s.ProgramCode = c.ProgramCode', [req.session.user.StudentID, req.body.CourseID, req.body.SecNo, currentSemYear, currentSemNo], (err,rows) => {
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve comments'
+            });
+        }else {
+            console.log(rows);
+            var data = rows[0];
+            db.query(   'insert into comment \
+            values (?, ?, ?, curdate(), ?, ?, ?, ?, ?, ?, ?)', [req.body.commentText, req.body.cRate, req.body.iRate, req.session.user.StudentID, data.InstID, req.body.SecNo, req.body.CourseID, data.Year, data.SemesterNo, data.ProgramCode], (err,rows) => {
+                if(err){
+                    res.status(400).json({
+                        message : 'Cannot retrieve comments'
+                    });
+                }else {
+                    res.status(200).json({});
+                }
+            });
+        }
+    
     });
 });
