@@ -204,9 +204,9 @@ DROP TABLE IF EXISTS `examination`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `examination` (
   `Type` varchar(5) NOT NULL,
-  `day` date NOT NULL,
-  `startTime` time(4) NOT NULL,
-  `endTime` time(4) NOT NULL,
+  `date` date NOT NULL,
+  `startTime` time NOT NULL,
+  `endTime` time NOT NULL,
   `CourseID` int(11) NOT NULL,
   `Year` int(11) NOT NULL,
   `SemesterNo` int(11) NOT NULL,
@@ -423,9 +423,9 @@ DROP TABLE IF EXISTS `section`;
 CREATE TABLE `section` (
   `MaxStudent` int(11) NOT NULL,
   `SecNo` int(11) NOT NULL,
-  `startTime` time(4) NOT NULL,
-  `endTime` time(4) NOT NULL,
-  `day` int(11) NOT NULL,
+  `startTime` time NOT NULL,
+  `endTime` time NOT NULL,
+  `day` int(1) NOT NULL,
   `CourseID` int(11) NOT NULL,
   `Year` int(11) NOT NULL,
   `SemesterNo` int(11) NOT NULL,
