@@ -13,7 +13,7 @@ app.set('trust proxy', 1)
 var loggedin = false;
 var userid;
 var currentSemYear = 2019;
-var currentSemNo = 2;
+var currentSemNo = 1;
 
 function isNumeric(num){
     return !isNaN(num)
@@ -123,25 +123,14 @@ app.post('/login', function(req, res){
 //example query
 app.get("/courseinfo", function(req, res) {
     console.log("course info");
-    console.log(req.session.user);
-    //console.log(req.session.user.StudentID);
-    /*db.query('SELECT * FROM course c WHERE c.CourseID LIKE ? ', [req.query.course_id + '%'], (err,rows) => {
-        if(err){
-            res.status(400).json({
-                message : 'Cannot retrieve course info'
-            });
-        }else {
-            res.json(rows);
-            console.log(rows);
-        }
-    });*/
 
     db.query('SELECT distinct s.CourseID, c.CourseName, s.SecNo, s.day, s.startTime, s.endTime, ro.Bcode, ro.Floor, ro.RoomNo, t1.registeredStudent, s.MaxStudent \
     FROM section s, ( \
-        select r.courseID, r.secNo, count(*) as registeredStudent \
-        from register r \
-        where r.courseID LIKE ? and r.Year = ? and r.SemesterNo = ? \
-        group by r.SecNo \
+        select s.CourseID, s.SecNo, count(StudentID)  as registeredStudent \
+        from section s left join register r \
+        on s.courseID = r.CourseID and s.SecNo = r.SecNo and s.Year = r.Year and s.SemesterNo = r.SemesterNo and s.ProgramCode = r.ProgramCode \
+        where s.courseID LIKE ? and s.Year LIKE ? and s.SemesterNo LIKE ? \
+        group by s.SecNo \
     ) t1, course c, secroom sr, room ro \
     WHERE s.CourseID LIKE ? and  \
         s.SecNo = t1.secNo and  \
@@ -152,7 +141,7 @@ app.get("/courseinfo", function(req, res) {
         sr.CourseID = s.CourseID and \
         sr.SecNo = s.SecNo and \
         sr.RoomNo = ro.RoomNo and \
-        sr.Bcode = ro.Bcode ', [req.query.course_id + '%',req.query.year,req.query.semNo,req.query.course_id + '%'], (err,rows) => {
+        sr.Bcode = ro.Bcode ', [req.query.course_id + '%',req.query.year + '%',req.query.semNo + '%',req.query.course_id + '%'], (err,rows) => {
         if(err){
             res.status(400).json({
                 message : 'Cannot retrieve course info'
@@ -212,24 +201,32 @@ app.get("/studentinfo", function(req, res) {
 
 app.get("/viewregister", function(req, res) {
     console.log("view register");
-    //get registered courses of a student
-/*    db.query(   'SELECT r.ProgramCode, r.Year, r.SemesterNo, r.CourseID, c.CourseName, r.SecNo, r.registerResult \
-                FROM register r \
-                WHERE r.StudentID = ?', [req.session.user.StudentID], (err,rows) => {
-        if(err){
-            res.status(400).json({
-                message : 'Cannot retrieve registered data'
-            });
-        }else {
-            res.json(rows);
-            console.log(rows);
-        }
-    });
-    */
-    db.query(   'SELECT r.ProgramCode, r.Year, r.SemesterNo, r.CourseID, c.CourseName, c.Credit, r.SecNo, r.registerResult \
-            from register r,course c \
-            WHERE r.StudentID = ? AND r.CourseID=c.CourseID',
+   
+    db.query(   'SELECT r.Year, r.SemesterNo, r.CourseID, c.CourseName, r.SecNo, r.registerResult \
+                from register r,course c \
+                WHERE r.StudentID = ? and r.CourseID = c.CourseID \
+                order by r.Year, r.SemesterNo, r.CourseID',
             [req.session.user.StudentID],
+            (err,rows) => {
+            if(err){
+                res.status(400).json({
+                    message : 'Cannot retrieve registered data'
+                });
+            }else {
+                res.json(rows);
+                console.log(rows);
+            }
+    });
+});
+
+app.get("/viewregistercurrent", function(req, res) {
+    console.log("view register");
+   
+    db.query(   'SELECT r.Year, r.SemesterNo, r.CourseID, c.CourseName, r.SecNo, r.registerResult \
+                from register r,course c \
+                WHERE r.StudentID = ? and r.Year = ? and r.SemesterNo = ? and r.CourseID = c.CourseID \
+                order by r.Year, r.SemesterNo, r.CourseID',
+            [req.session.user.StudentID,currentSemYear,currentSemNo],
             (err,rows) => {
             if(err){
                 res.status(400).json({
@@ -275,7 +272,7 @@ app.post("/register", function(req, res) {
 app.get("/drop", function(req, res) {
     console.log("drop register");
 
-    db.query('DELETE FROM register WHERE StudentID = ? and CourseID = ? and Year = ? and SemesterNo = ?', [req.session.user.StudentID,CourseID,currentSemYear,currentSemNo], (err,rows) => {
+    db.query('DELETE FROM register WHERE StudentID = ? and CourseID = ? and Year = ? and SemesterNo = ?', [req.session.user.StudentID,req.query.course_id,currentSemYear,currentSemNo], (err,rows) => {
         if(err){
             res.status(400).json({
                 message : 'Cannot remove this course'
