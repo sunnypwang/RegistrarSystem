@@ -185,7 +185,7 @@ app.get("/studentinfo", function(req, res) {
 app.get("/viewregister", function(req, res) {
     console.log("view register");
     //get registered courses of a student
-    db.query(   'SELECT r.ProgramCode, r.Year, r.SemesterNo, r.CourseID, r.SecNo, r.registerResult \
+/*    db.query(   'SELECT r.ProgramCode, r.Year, r.SemesterNo, r.CourseID, c.CourseName, r.SecNo, r.registerResult \
                 FROM register r \
                 WHERE r.StudentID = ?', [req.session.user.StudentID], (err,rows) => {
         if(err){
@@ -197,7 +197,21 @@ app.get("/viewregister", function(req, res) {
             console.log(rows);
         }
     });
-
+    */
+    db.query(   'SELECT r.ProgramCode, r.Year, r.SemesterNo, r.CourseID, c.CourseName, c.Credit, r.SecNo, r.registerResult \
+            from register r,course c \
+            WHERE r.StudentID = ? AND r.CourseID=c.CourseID',
+            [req.session.user.StudentID],
+            (err,rows) => {
+            if(err){
+                res.status(400).json({
+                    message : 'Cannot retrieve registered data'
+                });
+            }else {
+                res.json(rows);
+                console.log(rows);
+            }
+    });
 });
 
 app.post("/register", function(req, res) {
