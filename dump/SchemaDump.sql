@@ -330,8 +330,8 @@ DROP TABLE IF EXISTS `register`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `register` (
-  `registerResult` tinyint(1) NOT NULL,
-  `grade` varchar(1) NOT NULL,
+  `registerResult` tinyint(1) DEFAULT 0,
+  `grade` varchar(1) DEFAULT 'X',
   `StudentID` int(11) NOT NULL,
   `SecNo` int(11) NOT NULL,
   `CourseID` int(11) NOT NULL,
@@ -501,7 +501,8 @@ CREATE TABLE `student` (
   `ProgramCode` varchar(6) DEFAULT NULL,
   PRIMARY KEY (`StudentID`),
   KEY `Dcode` (`Dcode`,`Fcode`),
-  CONSTRAINT `student_ibfk_1` FOREIGN KEY (`Dcode`, `Fcode`) REFERENCES `department` (`Dcode`, `Fcode`)
+  CONSTRAINT `student_ibfk_1` FOREIGN KEY (`Dcode`, `Fcode`) REFERENCES `department` (`Dcode`, `Fcode`),
+  CONSTRAINT `student_ibfk_2` FOREIGN KEY (`ProgramCode`) REFERENCES `curriculum` (`ProgramCode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
