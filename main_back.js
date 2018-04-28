@@ -12,8 +12,8 @@ app.set('trust proxy', 1)
 
 var loggedin = false;
 var userid;
-var currentSemYear = 2018;
-var currentSemNo = 1;
+var currentSemYear = 2019;
+var currentSemNo = 2;
 
 function isNumeric(num){
     return !isNaN(num)
@@ -125,7 +125,34 @@ app.get("/courseinfo", function(req, res) {
     console.log("course info");
     console.log(req.session.user);
     //console.log(req.session.user.StudentID);
-    db.query('SELECT * FROM course c WHERE c.CourseID LIKE ? ', [req.query.course_id + '%'], (err,rows) => {
+    /*db.query('SELECT * FROM course c WHERE c.CourseID LIKE ? ', [req.query.course_id + '%'], (err,rows) => {
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve course info'
+            });
+        }else {
+            res.json(rows);
+            console.log(rows);
+        }
+    });*/
+
+    db.query('SELECT distinct s.CourseID, c.CourseName, s.SecNo, s.day, s.startTime, s.endTime, ro.Bcode, ro.Floor, ro.RoomNo, t1.registeredStudent, s.MaxStudent \
+    FROM section s, ( \
+        select r.courseID, r.secNo, count(*) as registeredStudent \
+        from register r \
+        where r.courseID LIKE ? and r.Year = ? and r.SemesterNo = ? \
+        group by r.SecNo \
+    ) t1, course c, secroom sr, room ro \
+    WHERE s.CourseID LIKE ? and  \
+        s.SecNo = t1.secNo and  \
+        c.CourseID = s.CourseID and \
+        sr.ProgramCode = s.ProgramCode and \
+        sr.Year = s.Year and \
+        sr.SemesterNo = s.SemesterNo and \
+        sr.CourseID = s.CourseID and \
+        sr.SecNo = s.SecNo and \
+        sr.RoomNo = ro.RoomNo and \
+        sr.Bcode = ro.Bcode ', [req.query.course_id + '%',req.query.year,req.query.semNo,req.query.course_id + '%'], (err,rows) => {
         if(err){
             res.status(400).json({
                 message : 'Cannot retrieve course info'
@@ -135,6 +162,7 @@ app.get("/courseinfo", function(req, res) {
             console.log(rows);
         }
     });
+
 });
 
 app.get("/facultyinfo", function(req, res) {
@@ -218,7 +246,7 @@ app.post("/register", function(req, res) {
     console.log("register");
     console.log(req.body);
 
-    db.query('SELECT s.', [], (err,rows) => {
+    db.query('SELECT s.ProgramCode FROM student s WHERE s.StudentID = ? ', [req.session.user.StudentID], (err,rows) => {
         if(err){
             res.status(404).json({
                 success : false,
@@ -226,7 +254,8 @@ app.post("/register", function(req, res) {
             });
         } else {
             pcode = rows[0].ProgramCode;
-            db.query('insert into register values (0,"X",?,?,?,?,?,?)', [req.session.user.StudentID,req.body.SecNo,req.body.CourseID,currentSemYear,currentSemNo,pcode], (err,rows) => {
+            db.query('INSERT into register (StudentID, SecNo, CourseID, Year, SemesterNo, ProgramCode) \
+                values (?,?,?,?,?,?);', [req.session.user.StudentID,req.body.SecNo,req.body.CourseID,currentSemYear,currentSemNo,pcode], (err,rows) => {
                 if(err){
                     res.status(400).json({
                         success : false,
@@ -284,6 +313,55 @@ app.get("/certificate", function(req, res) {
         if(err){
             res.status(400).json({
                 message : 'Cannot retrieve certificate data'
+            });
+        }else {
+            res.json(rows);
+            console.log(rows);
+        }
+    });
+});
+
+app.get("/examtime", function(req, res) {
+    console.log("exam timetable");
+    db.query(   'select distinct e.date, e.startTime, e.endTime, e.Type, e.CourseID, c.CourseName,   ro.Bcode, ro.Floor, ro.RoomNo \
+    from examroom exr, register r, room ro, course c, examination e \
+    where r.StudentID = ? and \
+        e.ProgramCode = r.ProgramCode and e.ProgramCode = exr.ProgramCode and \
+        e.Year = r.Year and e.Year = exr.Year and  \
+        e.SemesterNo = r.SemesterNo and e.SemesterNo = exr.SemesterNo and \
+        e.CourseID = r.CourseID and e.CourseID = exr.CourseID and \
+        e.Type = exr.Type and \
+        exr.RoomNo = ro.RoomNo and  \
+        exr.Bcode = ro.Bcode and \
+        c.CourseID = e.CourseID \
+    order by e.date', [req.session.user.StudentID], (err,rows) => {
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve exam timetable'
+            });
+        }else {
+            res.json(rows);
+            console.log(rows);
+        }
+    });
+});
+
+app.get("/classtime", function(req, res) {
+    console.log("class timetable");
+    db.query(   'select distinct s.CourseID, s.SecNo, s.day, s.startTime, s.endTime, ro.Bcode, ro.Floor, ro.RoomNo \
+    from secroom sr, register r, room ro, section s \
+    where r.StudentID = ? and \
+        s.ProgramCode = r.ProgramCode and s.ProgramCode = sr.ProgramCode and \
+        s.Year = r.Year and s.Year = sr.Year and \
+        s.SemesterNo = r.SemesterNo and s.SemesterNo = sr.SemesterNo and \
+        s.CourseID = r.CourseID and s.CourseID = sr.CourseID and  \
+        s.SecNo = r.SecNo and s.SecNo = sr.SecNo and \
+        sr.RoomNo = ro.RoomNo and \
+        sr.Bcode = ro.Bcode \
+    order by s.day', [req.session.user.StudentID], (err,rows) => {
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve exam timetable'
             });
         }else {
             res.json(rows);

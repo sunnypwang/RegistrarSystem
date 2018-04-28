@@ -331,7 +331,7 @@ DROP TABLE IF EXISTS `register`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `register` (
   `registerResult` tinyint(1) DEFAULT 0,
-  `grade` varchar(1) DEFAULT 'X',
+  `grade` varchar(2) DEFAULT 'X',
   `StudentID` int(11) NOT NULL,
   `SecNo` int(11) NOT NULL,
   `CourseID` int(11) NOT NULL,
