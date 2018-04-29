@@ -368,7 +368,7 @@ app.get("/classtime", function(req, res) {
     });
 });
 
-app.post("/commentlist", function(req, res) {
+app.get("/commentlist", function(req, res) {
     console.log("list all courses waiting for comment");
 
     //get all courses that haven't been commented
