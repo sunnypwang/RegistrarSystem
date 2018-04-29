@@ -254,6 +254,7 @@ app.post("/register", function(req, res) {
             db.query('INSERT into register (StudentID, SecNo, CourseID, Year, SemesterNo, ProgramCode) \
                 values (?,?,?,?,?,?);', [req.session.user.StudentID,req.body.SecNo,req.body.CourseID,currentSemYear,currentSemNo,pcode], (err,rows) => {
                 if(err){
+                    console.log(err);
                     res.status(400).json({
                         success : false,
                         message : 'Course/Section not found'
@@ -367,7 +368,7 @@ app.get("/classtime", function(req, res) {
     });
 });
 
-app.get("/commentlist", function(req, res) {
+app.post("/commentlist", function(req, res) {
     console.log("list all courses waiting for comment");
 
     //get all courses that haven't been commented
@@ -394,7 +395,7 @@ app.get("/commentlist", function(req, res) {
     });
 });
 
-app.get("/commentadd", function(req, res) {
+app.post("/commentadd", function(req, res) {
     console.log("add comment");
 
     //get associated field from given CourseID and SecNo from FRONT
