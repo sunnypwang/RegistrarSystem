@@ -122,7 +122,7 @@ app.post('/login', function(req, res){
 
 //example query
 app.get("/courseinfo", function(req, res) {
-    console.log("course info");
+    console.log("===========course info===========");
 
     db.query('SELECT distinct s.CourseID, c.CourseName, s.SecNo, s.day, s.startTime, s.endTime, ro.Bcode, ro.Floor, ro.RoomNo, t1.registeredStudent, s.MaxStudent \
     FROM section s, ( \
@@ -169,7 +169,7 @@ app.get("/facultyinfo", function(req, res) {
 });
 
 app.get("/studentinfo", function(req, res) {
-    console.log("student info");
+    console.log("===========student info===========");
     console.log(req.session.user);
     db.query(   'SELECT \
                     s.StudentID, \
@@ -200,11 +200,15 @@ app.get("/studentinfo", function(req, res) {
 });
 
 app.get("/viewregister", function(req, res) {
-    console.log("view register");
+    console.log("===========view register===========");
    
     db.query(   'SELECT r.Year, r.SemesterNo, r.CourseID, c.CourseName, r.SecNo, r.registerResult \
                 from register r,course c \
-                WHERE r.StudentID = ? and r.CourseID = c.CourseID \
+                WHERE r.StudentID = ? and \
+                r.ProgramCode = c.ProgramCode and \
+				r.Year = c.Year and \
+				r.SemesterNo = c.SemesterNo and  \
+				r.CourseID = c.CourseID \
                 order by r.Year, r.SemesterNo, r.CourseID',
             [req.session.user.StudentID],
             (err,rows) => {
@@ -220,11 +224,15 @@ app.get("/viewregister", function(req, res) {
 });
 
 app.get("/viewregistercurrent", function(req, res) {
-    console.log("view register");
+    console.log("===========view register current===========");
    
     db.query(   'SELECT r.Year, r.SemesterNo, r.CourseID, c.CourseName, r.SecNo, r.registerResult \
                 from register r,course c \
-                WHERE r.StudentID = ? and r.Year = ? and r.SemesterNo = ? and r.CourseID = c.CourseID \
+                WHERE r.StudentID = ? and r.Year = ? and r.SemesterNo = ? and \
+                r.ProgramCode = c.ProgramCode and \
+				r.Year = c.Year and \
+				r.SemesterNo = c.SemesterNo and \
+				r.CourseID = c.CourseID \
                 order by r.Year, r.SemesterNo, r.CourseID',
             [req.session.user.StudentID,currentSemYear,currentSemNo],
             (err,rows) => {
@@ -240,7 +248,7 @@ app.get("/viewregistercurrent", function(req, res) {
 });
 
 app.post("/register", function(req, res) {
-    console.log("register");
+    console.log("===========register===========");
     console.log(req.body);
 
     db.query('SELECT s.ProgramCode FROM student s WHERE s.StudentID = ? ', [req.session.user.StudentID], (err,rows) => {
@@ -271,15 +279,31 @@ app.post("/register", function(req, res) {
 });
 
 app.get("/drop", function(req, res) {
-    console.log("drop register");
+    console.log("===========drop register===========");
 
-    db.query('DELETE FROM register WHERE StudentID = ? and CourseID = ? and Year = ? and SemesterNo = ?', [req.session.user.StudentID,req.query.course_id,currentSemYear,currentSemNo], (err,rows) => {
+    //check if that course exists in register table
+    db.query('SELECT CourseID FROM register WHERE StudentID = ? and CourseID = ? and Year = ? and SemesterNo = ?', [req.session.user.StudentID,req.query.course_id,currentSemYear,currentSemNo], (err,rows) => {
+        console.log(rows.length);
         if(err){
             res.status(400).json({
                 message : 'Cannot remove this course'
             });
-        }else {
-            res.status(200).json({});
+        }else if(rows.length != 0) {
+            
+            db.query('DELETE FROM register WHERE StudentID = ? and CourseID = ? and Year = ? and SemesterNo = ?', [req.session.user.StudentID,req.query.course_id,currentSemYear,currentSemNo], (err,rows) => {
+                if(err){
+                    res.status(400).json({
+                        message : 'Cannot remove this course'
+                    });
+                }else {
+                    res.status(200).json({});
+                }
+            });
+        } else {
+            console.log(rows);
+            res.status(404).json({
+                message : 'course not found in register table'
+            });
         }
     });
 
@@ -287,9 +311,15 @@ app.get("/drop", function(req, res) {
 
 app.get("/transcript", function(req, res) {
     console.log("view grade");
-    db.query(   'SELECT r.ProgramCode, r.Year, r.SemesterNo, r.CourseID, r.grade \
-                FROM register r \
-                WHERE r.StudentID = ?', [req.session.user.StudentID], (err,rows) => {
+    db.query(   'SELECT r.Year, r.SemesterNo, r.CourseID, c.CourseName, r.grade \
+    from register r,course c \
+    WHERE r.StudentID = ? and  \
+    r.registerResult = 1 and \
+    r.ProgramCode = c.ProgramCode and \
+    r.Year = c.Year and \
+    r.SemesterNo = c.SemesterNo and \
+    r.CourseID = c.CourseID \
+    order by r.Year, r.SemesterNo, r.CourseID', [req.session.user.StudentID], (err,rows) => {
         if(err){
             res.status(400).json({
                 message : 'Cannot retrieve student grade'
@@ -304,7 +334,7 @@ app.get("/transcript", function(req, res) {
 });
 
 app.get("/certificate", function(req, res) {
-    console.log("certificates requested");
+    console.log("===========certificates requested===========");
     db.query(   'SELECT * \
                 FROM certificate c \
                 WHERE c.StudentID = ?', [req.session.user.StudentID], (err,rows) => {
@@ -320,10 +350,10 @@ app.get("/certificate", function(req, res) {
 });
 
 app.get("/examtime", function(req, res) {
-    console.log("exam timetable");
+    console.log("===========exam timetable===========");
     db.query(   'select distinct e.date, e.startTime, e.endTime, e.Type, e.CourseID, c.CourseName,   ro.Bcode, ro.Floor, ro.RoomNo \
     from examroom exr, register r, room ro, course c, examination e \
-    where r.StudentID = ? and \
+    where r.StudentID = ? and r.Year = ? and r.SemesterNo = ? and r.registerResult = 1 and \
         e.ProgramCode = r.ProgramCode and e.ProgramCode = exr.ProgramCode and \
         e.Year = r.Year and e.Year = exr.Year and  \
         e.SemesterNo = r.SemesterNo and e.SemesterNo = exr.SemesterNo and \
@@ -332,7 +362,7 @@ app.get("/examtime", function(req, res) {
         exr.RoomNo = ro.RoomNo and  \
         exr.Bcode = ro.Bcode and \
         c.CourseID = e.CourseID \
-    order by e.date', [req.session.user.StudentID], (err,rows) => {
+    order by e.date', [req.session.user.StudentID,currentSemYear,currentSemNo], (err,rows) => {
         if(err){
             res.status(400).json({
                 message : 'Cannot retrieve exam timetable'
@@ -345,10 +375,10 @@ app.get("/examtime", function(req, res) {
 });
 
 app.get("/classtime", function(req, res) {
-    console.log("class timetable");
+    console.log("===========class timetable===========");
     db.query(   'select distinct s.CourseID, s.SecNo, s.day, s.startTime, s.endTime, ro.Bcode, ro.Floor, ro.RoomNo \
     from secroom sr, register r, room ro, section s \
-    where r.StudentID = ? and \
+    where r.StudentID = ? and r.Year = ? and r.SemesterNo = ? and r.registerResult = 1 and \
         s.ProgramCode = r.ProgramCode and s.ProgramCode = sr.ProgramCode and \
         s.Year = r.Year and s.Year = sr.Year and \
         s.SemesterNo = r.SemesterNo and s.SemesterNo = sr.SemesterNo and \
@@ -356,7 +386,7 @@ app.get("/classtime", function(req, res) {
         s.SecNo = r.SecNo and s.SecNo = sr.SecNo and \
         sr.RoomNo = ro.RoomNo and \
         sr.Bcode = ro.Bcode \
-    order by s.day', [req.session.user.StudentID], (err,rows) => {
+    order by s.day', [req.session.user.StudentID,currentSemYear,currentSemNo], (err,rows) => {
         if(err){
             res.status(400).json({
                 message : 'Cannot retrieve exam timetable'
@@ -369,15 +399,15 @@ app.get("/classtime", function(req, res) {
 });
 
 app.get("/commentlist", function(req, res) {
-    console.log("list all courses waiting for comment");
+    console.log("===========list all courses waiting for comment===========");
 
     //get all courses that haven't been commented
-    db.query(   'select s.CourseID, c.CourseName, s.SecNo, i.Title, i.FirstName, i.LastName \
+    db.query(   'select s.CourseID, c.CourseName, s.SecNo, i.InstID, i.Title, i.FirstName, i.LastName \
     from instructor i, section s, course c, \
         (select r.CourseID, r.SecNo, r.Year, r.SemesterNo, r.ProgramCode \
         from register r left join comment com \
         on r.StudentID = com.StudentID and r.courseID = com.CourseID and r.SecNo = com.SecNo and r.Year = com.Year and r.SemesterNo = com.SemesterNo and r.ProgramCode = com.ProgramCode \
-        where com.CourseID IS NULL   and r.StudentID = 58333333 and r.Year = 2018 and r.SemesterNo = 1) t1 \
+        where com.CourseID IS NULL   and r.StudentID = ? and r.Year = ? and r.SemesterNo = ?) t1 \
     where i.InstID = s.InstID and  \
     t1.courseId = s.courseID and c.CourseID = s.CourseID and \
     t1.secNo = s.SecNo and \
@@ -396,30 +426,30 @@ app.get("/commentlist", function(req, res) {
 });
 
 app.post("/commentadd", function(req, res) {
-    console.log("add comment");
-
+    console.log("===========add comment===========");
+    console.log(req.body);
     //get associated field from given CourseID and SecNo from FRONT
     db.query(   'select s.CourseID, s.SecNo, i.InstID, s.Year, s.SemesterNo, s.ProgramCode \
-    from instructor i, section s, course c, \
+    from instructor i, section s, \
         (select r.CourseID, r.SecNo, r.Year, r.SemesterNo, r.ProgramCode \
         from register r left join comment com \
         on r.StudentID = com.StudentID and r.courseID = com.CourseID and r.SecNo = com.SecNo and r.Year = com.Year and r.SemesterNo = com.SemesterNo and r.ProgramCode = com.ProgramCode \
-        where com.CourseID IS NULL and r.StudentID = ? and r.CourseID = ? and r.SecNo = ? and r.Year = ? and r.SemesterNo = ?) t1 \
+        where com.CourseID IS NULL   and r.StudentID = ? and r.CourseID = ? and r.SecNo = ? and r.Year = ? and r.SemesterNo = ? ) t1 \
     where i.InstID = s.InstID and  \
-        t1.courseId = s.courseID and c.CourseID = s.CourseID and \
+        t1.courseId = s.courseID and \
         t1.secNo = s.SecNo and \
-        t1.Year = s.Year and s.Year = c.Year and \
-        t1.SemesterNo = s.SemesterNo and s.SemesterNo = c.SemesterNo and \
-        t1.ProgramCode = s.ProgramCode and s.ProgramCode = c.ProgramCode', [req.session.user.StudentID, req.body.CourseID, req.body.SecNo, currentSemYear, currentSemNo], (err,rows) => {
+        t1.Year = s.Year and \
+        t1.SemesterNo = s.SemesterNo and \
+        t1.ProgramCode = s.ProgramCode;', [req.session.user.StudentID, req.body.CourseID, req.body.SecNo, currentSemYear, currentSemNo], (err,rows) => {
         if(err){
             res.status(400).json({
                 message : 'Cannot retrieve comments'
             });
-        }else {
+        }else if (rows.length != 0) {
             console.log(rows);
             var data = rows[0];
             db.query(   'insert into comment \
-            values (?, ?, ?, curdate(), ?, ?, ?, ?, ?, ?, ?)', [req.body.commentText, req.body.cRate, req.body.iRate, req.session.user.StudentID, data.InstID, req.body.SecNo, req.body.CourseID, data.Year, data.SemesterNo, data.ProgramCode], (err,rows) => {
+            values (?, ?, ?, curdate(), ?, ?, ?, ?, ?, ?, ?)', [req.body.commentText, req.body.cRate, req.body.iRate, req.session.user.StudentID, data.InstID, data.SecNo, data.CourseID, data.Year, data.SemesterNo, data.ProgramCode], (err,rows) => {
                 if(err){
                     res.status(400).json({
                         message : 'Cannot retrieve comments'
@@ -427,6 +457,11 @@ app.post("/commentadd", function(req, res) {
                 }else {
                     res.status(200).json({});
                 }
+            });
+        } else {
+            console.log(rows);
+            res.status(404).json({
+                message : 'Course not found or already commented'
             });
         }
     
