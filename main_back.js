@@ -126,13 +126,13 @@ app.get("/courseinfo", function(req, res) {
 
     db.query('SELECT distinct s.CourseID, c.CourseName, s.SecNo, s.day, s.startTime, s.endTime, ro.Bcode, ro.Floor, ro.RoomNo, t1.registeredStudent, s.MaxStudent \
     FROM section s, ( \
-        select s.CourseID, s.SecNo, count(StudentID)  as registeredStudent \
+        select s.CourseID, s.SecNo, count(r.StudentID) as registeredStudent \
         from section s left join register r \
-        on s.courseID = r.CourseID and s.SecNo = r.SecNo and s.Year = r.Year and s.SemesterNo = r.SemesterNo and s.ProgramCode = r.ProgramCode \
-        where s.courseID LIKE ? and s.Year LIKE ? and s.SemesterNo LIKE ? \
-        group by s.SecNo \
+        on s.CourseID = r.CourseID and s.SecNo = r.SecNo and s.Year = r.Year and s.SemesterNo = r.SemesterNo and s.ProgramCode = r.ProgramCode and r.registerResult = 1 \
+        where s.CourseID LIKE ? and s.Year = ? and s.SemesterNo = ? \
+        group by s.CourseID, s.SecNo \
     ) t1, course c, secroom sr, room ro \
-    WHERE s.CourseID LIKE t1.CourseID and  \
+    WHERE s.CourseID = t1.CourseID and  \
         s.SecNo = t1.secNo and  \
         c.CourseID = s.CourseID and \
         sr.ProgramCode = s.ProgramCode and \
