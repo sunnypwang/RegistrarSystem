@@ -56,7 +56,19 @@ http.listen(3001, function(){
 });
 
 app.get('/', function(req, res){
-    res.sendFile('login.html', { root: __dirname });
+    //res.sendFile('login.html', { root: __dirname });
+    db.query('select * \
+    from register r \
+    where r.registerResult = 0 \
+    order by r.StudentID', (err,rows) => {
+        if(err){
+            res.status(400).json({
+                message : 'Cannot retrieve register info'
+            });
+        }else {
+            res.json(rows);
+        }
+    });
 });
 
 app.post('/checksession',function(req,res){
@@ -407,7 +419,7 @@ app.get("/commentlist", function(req, res) {
         (select r.CourseID, r.SecNo, r.Year, r.SemesterNo, r.ProgramCode \
         from register r left join comment com \
         on r.StudentID = com.StudentID and r.courseID = com.CourseID and r.SecNo = com.SecNo and r.Year = com.Year and r.SemesterNo = com.SemesterNo and r.ProgramCode = com.ProgramCode \
-        where com.CourseID IS NULL   and r.StudentID = ? and r.Year = ? and r.SemesterNo = ?) t1 \
+        where com.CourseID IS NULL   and r.StudentID = ? and r.Year = ? and r.SemesterNo = ? and r.registerResult = 1) t1 \
     where i.InstID = s.InstID and  \
     t1.courseId = s.courseID and c.CourseID = s.CourseID and \
     t1.secNo = s.SecNo and \
@@ -434,7 +446,7 @@ app.post("/commentadd", function(req, res) {
         (select r.CourseID, r.SecNo, r.Year, r.SemesterNo, r.ProgramCode \
         from register r left join comment com \
         on r.StudentID = com.StudentID and r.courseID = com.CourseID and r.SecNo = com.SecNo and r.Year = com.Year and r.SemesterNo = com.SemesterNo and r.ProgramCode = com.ProgramCode \
-        where com.CourseID IS NULL   and r.StudentID = ? and r.CourseID = ? and r.SecNo = ? and r.Year = ? and r.SemesterNo = ? ) t1 \
+        where com.CourseID IS NULL   and r.StudentID = ? and r.CourseID = ? and r.SecNo = ? and r.Year = ? and r.SemesterNo = ? and r.registerResult = 1) t1 \
     where i.InstID = s.InstID and  \
         t1.courseId = s.courseID and \
         t1.secNo = s.SecNo and \
